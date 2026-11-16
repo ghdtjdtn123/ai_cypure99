@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>나에게 맞는 직무유형 테스트</title>
+    <meta
+      name="description"
+      content="12가지 대학생활 상황 질문으로 나의 일하는 스타일을 알아보고, 어울리는 직무와 추천 자격증·과목을 확인하는 진로 탐색 테스트"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        --font-sans: "Pretendard Variable", "Pretendard", "Outfit", -apple-system,
+          BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        --font-display: "Outfit", "Pretendard Variable", "Pretendard", sans-serif;
+      }
+
+      html {
+        font-family: var(--font-sans);
+        color: #1e1633;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        background-color: #f6f3ff;
+        background-image:
+          radial-gradient(at 15% 10%, rgba(167, 139, 250, 0.18) 0px, transparent 48%),
+          radial-gradient(at 88% 85%, rgba(196, 181, 253, 0.22) 0px, transparent 50%);
+        background-attachment: fixed;
+        overflow-x: hidden;
+      }
+
+      .font-display {
+        font-family: var(--font-display);
+      }
+
+      .text-balance {
+        text-wrap: balance;
+      }
+
+      @keyframes fadeSlideUp {
+        from {
+          opacity: 0;
+          transform: translateY(14px) scale(0.99);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes bounceSelect {
+        0% {
+          transform: scale(1);
+        }
+        35% {
+          transform: scale(1.038);
+        }
+        70% {
+          transform: scale(0.985);
+        }
+        100% {
+          transform: scale(1.015);
+        }
+      }
+
+      .animate-enter {
+        animation: fadeSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .animate-bounce-select {
+        animation: bounceSelect 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+
+      .option-card {
+        transition:
+          transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+          border-color 0.18s ease,
+          background-color 0.18s ease,
+          box-shadow 0.18s ease;
+      }
+
+      .option-card:hover:not(:disabled) {
+        transform: translateY(-3px) scale(1.015);
+      }
+
+      .option-card:active:not(:disabled) {
+        transform: scale(0.97);
+      }
+
+      .btn-bouncy {
+        transition:
+          transform 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+          background-color 0.16s ease;
+      }
+
+      .btn-bouncy:hover {
+        transform: scale(1.015);
+      }
+
+      .btn-bouncy:active {
+        transform: scale(0.96);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app-wrapper" class="min-h-dvh flex flex-col transition-colors duration-500">
+      <header class="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-5 pb-2 flex items-center justify-between gap-4">
+        <button
+          id="brand-home-btn"
+          type="button"
+          class="text-sm sm:text-base font-bold tracking-tight text-[#2B1B4D] hover:text-violet-700 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 rounded-lg py-1"
+        >
+          나에게 맞는 직무유형 테스트
+        </button>
+
+        <button
+          id="header-reset-btn"
+          type="button"
+          class="hidden text-xs sm:text-sm font-medium text-[#6B6088] hover:text-violet-700 transition-colors whitespace-nowrap shrink-0 min-h-[40px] px-2.5 rounded-xl hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600"
+        >
+          처음으로
+        </button>
+      </header>
+
+      <main id="main-stage" class="flex-1 w-full px-4 sm:px-6 py-5 sm:py-8 flex items-center justify-center"></main>
+    </div>
+
+    <script>
+      const QUIZ_QUESTIONS = [
+        {
+          id: 1,
+          situation: '조별과제 첫 모임',
+          question: '교양 수업 조별과제 첫날, 아무도 말을 꺼내지 않고 어색한 정적이 흐른다. 이때 나는?',
+          options: [
+            {
+              id: 'A',
+              text: '“우리 역할부터 나누고 마감 일정표부터 같이 짤까요?” 먼저 진행을 맡아 방향을 잡는다.',
+              role: 'planning',
+            },
+            {
+              id: 'B',
+              text: '“먼저 참고할 만한 관련 통계랑 선배들 사례부터 찾아볼게요.” 객관적인 근거 자료를 조사한다.',
+              role: 'data',
+            },
+          ],
+        },
+        {
+          id: 2,
+          situation: '동아리 새내기 홍보',
+          question: '우리 동아리 신입 부원 모집 기간! 홍보 준비 중 내가 제일 신나게 맡고 싶은 역할은?',
+          options: [
+            {
+              id: 'A',
+              text: '지나가는 새내기 시선을 사로잡는 카드뉴스 색감과 포스터 레이아웃을 직접 꾸민다.',
+              role: 'design',
+            },
+            {
+              id: 'B',
+              text: 'QR코드만 찍으면 10초 만에 지원이 완료되고 자동 안내 메일까지 가는 신청 페이지를 세팅한다.',
+              role: 'dev',
+            },
+          ],
+        },
+        {
+          id: 3,
+          situation: '카페 아르바이트 피크타임',
+          question: '주말 오후 알바 중 밀려드는 주문에 매장이 정신없다. 내가 가장 먼저 움직이는 방식은?',
+          options: [
+            {
+              id: 'A',
+              text: '주문·제조·픽업 파트를 빠르게 나누고 동료들과 손발을 맞춰 작업 순서를 조율한다.',
+              role: 'planning',
+            },
+            {
+              id: 'B',
+              text: '포스기 단축키 동선이나 컵 홀더 배치처럼 반복 작업이 꼬이는 병목 구간부터 찾아 고친다.',
+              role: 'dev',
+            },
+          ],
+        },
+        {
+          id: 4,
+          situation: '대학 축제 부스 준비',
+          question: '학과 축제 부스를 운영하게 됐다. 준비 회의에서 내가 가장 꼼꼼하게 챙기고 싶은 부분은?',
+          options: [
+            {
+              id: 'A',
+              text: '사람들이 줄 서면서 사진 찍고 싶어지는 감성 간판, 메뉴판 스타일, 부스 분위기 연출!',
+              role: 'design',
+            },
+            {
+              id: 'B',
+              text: '작년 방문객 수와 재료 원가를 따져보고, 남김없이 가장 잘 팔릴 메뉴와 가격대 계산!',
+              role: 'data',
+            },
+          ],
+        },
+        {
+          id: 5,
+          situation: '수강신청 전날 밤',
+          question: '내일 아침이면 대망의 대학 첫 수강신청! 잠들기 전 나의 대비 스타일은?',
+          options: [
+            {
+              id: 'A',
+              text: '강의별 경쟁률, 장바구니 인원, 시간표 이동 거리를 표로 정리해 플랜 C까지 확률을 계산한다.',
+              role: 'data',
+            },
+            {
+              id: 'B',
+              text: '서버 시간 시계를 띄워두고 클릭 동선, 새로고침 타이밍, 탭 전환 단축키를 실전처럼 연습한다.',
+              role: 'dev',
+            },
+          ],
+        },
+        {
+          id: 6,
+          situation: '동아리 MT 준비위원회',
+          question: '동아리 MT 준비팀에 들어갔다. 여러 일 중 내가 손 들고 먼저 가져가고 싶은 파트는?',
+          options: [
+            {
+              id: 'A',
+              text: '입실부터 게임, 식사, 귀가까지 1박 2일이 지루할 틈 없도록 타임테이블과 동선을 짠다.',
+              role: 'planning',
+            },
+            {
+              id: 'B',
+              text: '조별 이름표, 웰컴 안내 책자, 단체 티셔츠 시안 등 모두가 기념으로 간직할 굿즈를 만든다.',
+              role: 'design',
+            },
+          ],
+        },
+        {
+          id: 7,
+          situation: '발표 D-2 조별과제',
+          question: '자료 조사는 거의 끝났고 이틀 뒤면 발표다. 마지막 완성도를 높이기 위해 내가 맡을 일은?',
+          options: [
+            {
+              id: 'A',
+              text: '슬라이드마다 폰트, 여백, 도표 컬러를 통일해 교수님 눈에 쏙 들어오는 깔끔한 PPT를 만든다.',
+              role: 'design',
+            },
+            {
+              id: 'B',
+              text: '청중이 고개를 끄덕일 수 있도록 도입-문제-해결 스토리라인을 정리하고 발표 대본 흐름을 잡는다.',
+              role: 'planning',
+            },
+          ],
+        },
+        {
+          id: 8,
+          situation: '동기들과 배달비 정산',
+          question: '기숙사 동기 6명과 야식을 시켰는데, 메뉴별 할인 쿠폰에 배달비까지 더해져 계산이 복잡하다.',
+          options: [
+            {
+              id: 'A',
+              text: '다음에도 쓰기 편하게 인원수와 금액만 넣으면 1인당 금액이 자동 계산되는 시트를 뚝딱 만든다.',
+              role: 'dev',
+            },
+            {
+              id: 'B',
+              text: '각자 시킨 메뉴 가격 비중과 할인율을 10원 단위까지 정확히 분석해 오차 없이 딱 맞춘다.',
+              role: 'data',
+            },
+          ],
+        },
+        {
+          id: 9,
+          situation: '편의점 아르바이트 진열',
+          question: '점장님이 “이번 달 신제품 코너가 생각보다 안 팔리네, 좀 바꿔볼래?”라고 하셨다. 나의 방법은?',
+          options: [
+            {
+              id: 'A',
+              text: '최근 일주일 판매 영수증과 시간대별 손님 연령대를 살펴보고 잘 팔리는 제품 옆에 배치한다.',
+              role: 'data',
+            },
+            {
+              id: 'B',
+              text: '시선이 닿는 눈높이에 맞춰 패키지 색감별로 정리하고, 눈에 띄는 손글씨 POP 안내 카드를 붙인다.',
+              role: 'design',
+            },
+          ],
+        },
+        {
+          id: 10,
+          situation: '학과 홈페이지 리뉴얼',
+          question: '너무 낡고 불편한 학과·동아리 안내 웹페이지를 새로 단장하기로 했다! 내가 탐나는 역할은?',
+          options: [
+            {
+              id: 'A',
+              text: '처음 들어온 사람도 헷갈리지 않도록 깔끔한 화면 배치와 버튼 스타일, 시각적 분위기를 디자인한다.',
+              role: 'design',
+            },
+            {
+              id: 'B',
+              text: '모바일에서도 버벅이지 않고 버튼이 매끄럽게 동작하도록 실제 웹페이지 화면과 기능을 구현한다.',
+              role: 'dev',
+            },
+          ],
+        },
+        {
+          id: 11,
+          situation: '자유 주제 교양 리포트',
+          question: '주제 제한 없는 5장짜리 에세이 과제가 나왔다. 내가 더 재미있게 써 내려갈 수 있는 방향은?',
+          options: [
+            {
+              id: 'A',
+              text: '“이 서비스나 현상은 어떤 원리로 굴러갈까?” 작동 구조와 기술적 메커니즘을 끝까지 파고든다.',
+              role: 'dev',
+            },
+            {
+              id: 'B',
+              text: '“사람들이 여기서 겪는 불편을 어떻게 바꿀 수 있을까?” 새로운 해결 아이디어와 개선안을 제안한다.',
+              role: 'planning',
+            },
+          ],
+        },
+        {
+          id: 12,
+          situation: '개강 첫 주 학기 계획',
+          question: '설레는 1학년 새 학기! 공부와 대외활동을 알차게 챙기기 위해 내가 먼저 꺼내 드는 계획 방식은?',
+          options: [
+            {
+              id: 'A',
+              text: '이번 학기에 꼭 해보고 싶은 동아리·공모전·목표를 큰 그림으로 정하고 월별 로드맵을 세운다.',
+              role: 'planning',
+            },
+            {
+              id: 'B',
+              text: '요일별 통학 시간, 공강, 과제 소요 시간을 숫자로 쪼개서 주간 가용 시간을 정확히 계산해 둔다.',
+              role: 'data',
+            },
+          ],
+        },
+      ];
+
+      const HERO_SVG = `
+        <svg viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" aria-label="대학생의 노트, 나침반, 아이디어 카드 일러스트">
+          <rect width="320" height="240" rx="20" fill="#F7F5FF"/>
+          <rect x="44" y="42" width="128" height="156" rx="14" fill="#FFFFFF" stroke="#241447" stroke-width="2.5"/>
+          <line x1="64" y1="74" x2="152" y2="74" stroke="#7C3AED" stroke-width="4" stroke-linecap="round"/>
+          <line x1="64" y1="96" x2="138" y2="96" stroke="#DDD6FE" stroke-width="4" stroke-linecap="round"/>
+          <line x1="64" y1="114" x2="146" y2="114" stroke="#DDD6FE" stroke-width="4" stroke-linecap="round"/>
+          <rect x="64" y="136" width="38" height="38" rx="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+          <rect x="112" y="136" width="38" height="38" rx="8" fill="#7C3AED"/>
+          <path d="M124 155L130 161L140 149" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="228" cy="96" r="42" fill="#FFFFFF" stroke="#241447" stroke-width="2.5"/>
+          <circle cx="228" cy="96" r="32" fill="#F3E8FF"/>
+          <polygon points="228,70 237,96 228,122 219,96" fill="#7C3AED" stroke="#241447" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="228" cy="96" r="5" fill="#FFFFFF" stroke="#241447" stroke-width="2"/>
+          <rect x="188" y="154" width="90" height="44" rx="12" fill="#FFFFFF" stroke="#241447" stroke-width="2.5"/>
+          <circle cx="212" cy="176" r="9" fill="#DDD6FE" stroke="#7C3AED" stroke-width="2"/>
+          <line x1="230" y1="171" x2="262" y2="171" stroke="#241447" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="230" y1="182" x2="254" y2="182" stroke="#A78BFA" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      `;
+
+      const ROLE_SVGS = {
+        planning: `
+          <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" aria-label="기획형 PM 일러스트">
+            <rect width="180" height="180" rx="20" fill="#F7F3FF"/>
+            <rect x="24" y="34" width="56" height="44" rx="10" fill="#FFFFFF" stroke="#211047" stroke-width="2.5"/>
+            <rect x="33" y="44" width="38" height="8" rx="4" fill="#7C3AED"/>
+            <line x1="33" y1="62" x2="66" y2="62" stroke="#DDD6FE" stroke-width="4" stroke-linecap="round"/>
+            <rect x="100" y="34" width="56" height="44" rx="10" fill="#FFFFFF" stroke="#211047" stroke-width="2.5"/>
+            <circle cx="116" cy="56" r="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+            <line x1="130" y1="52" x2="146" y2="52" stroke="#211047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="130" y1="61" x2="142" y2="61" stroke="#A78BFA" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M80 56H100" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M128 78V100" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="60" cy="126" r="28" fill="#FFFFFF" stroke="#211047" stroke-width="2.5"/>
+            <polygon points="60,106 67,126 60,146 53,126" fill="#7C3AED" stroke="#211047" stroke-width="2"/>
+            <rect x="98" y="102" width="58" height="46" rx="10" fill="#7C3AED" stroke="#211047" stroke-width="2.5"/>
+            <path d="M114 125L123 134L141 116" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        `,
+        dev: `
+          <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" aria-label="개발형 엔지니어 일러스트">
+            <rect width="180" height="180" rx="20" fill="#F2F7FF"/>
+            <rect x="26" y="34" width="128" height="86" rx="12" fill="#FFFFFF" stroke="#0E224A" stroke-width="2.5"/>
+            <rect x="26" y="34" width="128" height="18" rx="10" fill="#DBEAFE" stroke="#0E224A" stroke-width="2.5"/>
+            <circle cx="40" cy="43" r="3" fill="#2563EB"/>
+            <circle cx="50" cy="43" r="3" fill="#60A5FA"/>
+            <path d="M68 70L54 84L68 98" stroke="#2563EB" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M112 70L126 84L112 98" stroke="#2563EB" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="96" y1="66" x2="84" y2="102" stroke="#0E224A" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M18 124H162L152 144H28L18 124Z" fill="#DBEAFE" stroke="#0E224A" stroke-width="2.5" stroke-linejoin="round"/>
+            <rect x="74" y="129" width="32" height="5" rx="2.5" fill="#2563EB"/>
+          </svg>
+        `,
+        design: `
+          <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" aria-label="디자인형 프로덕트 디자이너 일러스트">
+            <rect width="180" height="180" rx="20" fill="#FFF4F7"/>
+            <rect x="28" y="28" width="70" height="124" rx="14" fill="#FFFFFF" stroke="#421024" stroke-width="2.5"/>
+            <rect x="38" y="44" width="50" height="36" rx="8" fill="#FFE0E9" stroke="#E11D48" stroke-width="2"/>
+            <rect x="38" y="90" width="50" height="10" rx="5" fill="#E11D48"/>
+            <rect x="38" y="108" width="36" height="8" rx="4" fill="#FECDD3"/>
+            <rect x="38" y="124" width="50" height="14" rx="7" fill="#421024"/>
+            <path d="M112 52C126 36 148 36 154 56C160 76 122 86 120 108" stroke="#E11D48" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="112" cy="52" r="5" fill="#FFFFFF" stroke="#421024" stroke-width="2.5"/>
+            <circle cx="120" cy="108" r="5" fill="#E11D48" stroke="#421024" stroke-width="2"/>
+            <rect x="110" y="122" width="44" height="30" rx="8" fill="#FFFFFF" stroke="#421024" stroke-width="2.5"/>
+            <circle cx="124" cy="137" r="6" fill="#E11D48"/>
+            <circle cx="140" cy="137" r="6" fill="#FDA4AF"/>
+          </svg>
+        `,
+        data: `
+          <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" aria-label="데이터형 애널리스트 일러스트">
+            <rect width="180" height="180" rx="20" fill="#F2FDF8"/>
+            <rect x="24" y="34" width="132" height="112" rx="14" fill="#FFFFFF" stroke="#0B3325" stroke-width="2.5"/>
+            <rect x="42" y="98" width="18" height="32" rx="5" fill="#A7F3D0" stroke="#0B3325" stroke-width="2"/>
+            <rect x="68" y="78" width="18" height="52" rx="5" fill="#34D399" stroke="#0B3325" stroke-width="2"/>
+            <rect x="94" y="60" width="18" height="70" rx="5" fill="#059669" stroke="#0B3325" stroke-width="2"/>
+            <circle cx="126" cy="72" r="24" fill="#ECFDF5" stroke="#0B3325" stroke-width="2.5"/>
+            <path d="M116 74L123 67L129 73L136 64" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="143" y1="89" x2="158" y2="104" stroke="#0B3325" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        `,
+      };
+
+      const ROLE_PROFILES = {
+        planning: {
+          role: 'planning',
+          shortLabel: '기획',
+          title: '기획형 PM',
+          englishSubtitle: 'Product & Service Planner',
+          nickname: '흩어진 아이디어를 하나의 길로 잇는 팀의 나침반',
+          description:
+            '조별과제나 동아리에서 모두가 막막해할 때 가장 먼저 전체 그림을 그리고 판을 짜는 타입이에요. 일상 속 불편함을 빠르게 포착하고, 서로 다른 팀원의 강점을 연결해 목표까지 이끄는 데 뛰어난 감각을 갖고 있어요. 직접 코딩이나 그림을 끝까지 그리지 않아도 “왜 이걸 만들어야 하는지”를 정의하고 설득하는 서비스 기획자·PM 직무와 찰떡이에요.',
+          keywords: ['전체 흐름 설계', '문제 정의와 조율', '사용자 중심 아이디어'],
+          recommendations: [
+            {
+              title: '경영학개론 · 서비스기획 입문',
+              kind: '추천 과목',
+              reason: '고객의 문제를 정의하고 설득력 있는 해결 아이디어를 구조화하는 기본기를 다질 수 있어요.',
+            },
+            {
+              title: 'SQLD (SQL 개발자)',
+              kind: '추천 자격증',
+              reason: '개발자·데이터 분석가와 소통할 때 데이터 근거를 직접 뽑아보며 기획력을 한 단계 높여줘요.',
+            },
+            {
+              title: '컴퓨터활용능력 1급 · GA4 인증',
+              kind: '실무 기초',
+              reason: '수치 정리와 사용자 행동 흐름을 읽는 연습을 통해 1학년부터 탄탄한 기획 기초를 쌓을 수 있어요.',
+            },
+          ],
+          theme: {
+            pageBg: 'bg-[#F3EEFF]',
+            heroBannerBg: 'bg-gradient-to-br from-[#EDE3FF] via-[#F6F1FF] to-[#E5D7FF]',
+            cardShadow: 'shadow-[0_20px_54px_-18px_rgba(109,40,217,0.22)]',
+            accentText: 'text-violet-700',
+            headingText: 'text-[#211047]',
+            divider: 'divide-violet-100 border-violet-100',
+            barFill: 'bg-violet-600',
+            barTrack: 'bg-violet-100',
+            barSecondary: 'bg-violet-300',
+            primaryButton:
+              'bg-violet-600 hover:bg-violet-700 active:bg-violet-800 shadow-[0_10px_24px_-6px_rgba(124,58,237,0.45)] focus-visible:ring-violet-600',
+            secondaryButton:
+              'bg-violet-50 hover:bg-violet-100 text-violet-800 focus-visible:ring-violet-600',
+            separatorColor: 'text-violet-300',
+          },
+        },
+        dev: {
+          role: 'dev',
+          shortLabel: '개발',
+          title: '개발형 엔지니어',
+          englishSubtitle: 'Software Engineer',
+          nickname: '머릿속 상상을 작동하는 현실로 빚어내는 해결사',
+          description:
+            '반복되거나 비효율적인 일을 보면 “이거 더 깔끔하게 자동화할 수 없을까?”부터 떠올리는 논리파예요. 복잡한 문제를 작은 단위로 차근차근 분해하고, 내 손으로 직접 작동하는 결과물을 완성했을 때 가장 큰 성취감을 느껴요. 지금은 코딩 경험이 없어도 괜찮아요—원리를 파고드는 탐구심과 논리력이 있어 프론트엔드·백엔드·소프트웨어 개발 직무에서 빠르게 성장할 거예요.',
+          keywords: ['논리적 문제 분해', '효율과 자동화', '직접 만드는 성취감'],
+          recommendations: [
+            {
+              title: '파이썬 프로그래밍 기초 · 웹개발 입문',
+              kind: '추천 과목',
+              reason: '코딩 문법을 외우기보다 문제를 단계별로 해결하는 컴퓨팅 사고력을 즐겁게 익힐 수 있어요.',
+            },
+            {
+              title: 'SQLD (SQL 개발자)',
+              kind: '추천 자격증',
+              reason: '웹과 앱 서비스 뒤에 있는 데이터베이스 구조를 이해하는 데 1학년이 따기 가장 좋은 자격증이에요.',
+            },
+            {
+              title: '컴퓨터공학 개론 · Git/웹 기초 스터디',
+              kind: '과목·기초',
+              reason: '고학년 때 정보처리기사를 준비하기 전에 컴퓨터와 인터넷이 작동하는 큰 원리를 먼저 잡아줘요.',
+            },
+          ],
+          theme: {
+            pageBg: 'bg-[#EDF5FF]',
+            heroBannerBg: 'bg-gradient-to-br from-[#DFEDFF] via-[#F2F7FF] to-[#D6E8FF]',
+            cardShadow: 'shadow-[0_20px_54px_-18px_rgba(37,99,235,0.20)]',
+            accentText: 'text-blue-700',
+            headingText: 'text-[#0E224A]',
+            divider: 'divide-blue-100 border-blue-100',
+            barFill: 'bg-blue-600',
+            barTrack: 'bg-blue-100',
+            barSecondary: 'bg-blue-300',
+            primaryButton:
+              'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 shadow-[0_10px_24px_-6px_rgba(37,99,235,0.42)] focus-visible:ring-blue-600',
+            secondaryButton:
+              'bg-blue-50 hover:bg-blue-100 text-blue-800 focus-visible:ring-blue-600',
+            separatorColor: 'text-blue-300',
+          },
+        },
+        design: {
+          role: 'design',
+          shortLabel: '디자인',
+          title: '디자인형 프로덕트 디자이너',
+          englishSubtitle: 'UI/UX & Product Designer',
+          nickname: '보이지 않는 불편까지 감각적인 경험으로 바꾸는 번역가',
+          description:
+            '포스터 한 장, 발표 슬라이드 한 칸을 만들어도 보는 사람의 기분과 시선 흐름을 세심하게 챙기는 타입이에요. 단순히 예쁘게 꾸미는 것을 넘어 “어떻게 하면 처음 보는 사람도 한눈에 이해하고 쓰기 편할까?”를 자연스럽게 고민해요. 사람의 감성과 사용성을 시각 언어로 풀어내는 UI/UX 디자이너·프로덕트 디자이너 직무와 아주 잘 어울려요.',
+          keywords: ['시각적 완성도', '사용 편의성 고민', '디테일한 표현력'],
+          recommendations: [
+            {
+              title: '시각디자인 기초 · HCI(인간-컴퓨터 상호작용)',
+              kind: '추천 과목',
+              reason: '색감·레이아웃 원리와 함께 “사람이 쓰기 편한 화면”을 설계하는 관점을 배울 수 있어요.',
+            },
+            {
+              title: 'GTQ (그래픽기술자격) 1급',
+              kind: '추천 자격증',
+              reason: '디자인 툴 다루는 속도와 기초 감각을 길러 동아리 홍보물부터 바로 실력을 발휘할 수 있어요.',
+            },
+            {
+              title: '웹디자인기능사 · Figma 실습',
+              kind: '자격·실습',
+              reason: '실제 모바일 앱과 웹사이트 화면을 직접 그려보며 나만의 첫 디자인 포트폴리오를 시작해 보세요.',
+            },
+          ],
+          theme: {
+            pageBg: 'bg-[#FFF0F4]',
+            heroBannerBg: 'bg-gradient-to-br from-[#FFE0E9] via-[#FFF4F7] to-[#FCE3EE]',
+            cardShadow: 'shadow-[0_20px_54px_-18px_rgba(225,29,72,0.18)]',
+            accentText: 'text-rose-700',
+            headingText: 'text-[#421024]',
+            divider: 'divide-rose-100 border-rose-100',
+            barFill: 'bg-rose-600',
+            barTrack: 'bg-rose-100',
+            barSecondary: 'bg-rose-300',
+            primaryButton:
+              'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 shadow-[0_10px_24px_-6px_rgba(225,29,72,0.40)] focus-visible:ring-rose-600',
+            secondaryButton:
+              'bg-rose-50 hover:bg-rose-100 text-rose-800 focus-visible:ring-rose-600',
+            separatorColor: 'text-rose-300',
+          },
+        },
+        data: {
+          role: 'data',
+          shortLabel: '데이터',
+          title: '데이터형 애널리스트',
+          englishSubtitle: 'Data & Business Analyst',
+          nickname: '감보다 정확한 근거로 숨은 답을 찾아내는 탐정',
+          description:
+            '무언가 결정할 때 막연한 느낌보다 구체적인 숫자와 사례를 먼저 확인해야 마음이 놓이는 꼼꼼한 분석가예요. 복잡한 정보 속에서 일정한 패턴과 원인을 찾아내고, 모두가 납득할 수 있는 객관적인 이유를 정리해 주는 데 강점이 있어요. 숫자 뒤에 숨은 사람들의 행동을 읽어내어 더 나은 선택을 돕는 데이터 분석가·비즈니스 애널리스트 직무가 딱 맞아요.',
+          keywords: ['팩트와 근거 중심', '패턴·원인 포착', '객관적 의사결정'],
+          recommendations: [
+            {
+              title: '기초통계학 · 데이터 리터러시 입문',
+              kind: '추천 과목',
+              reason: '어려운 수학 공식보다 숫자와 그래프를 왜곡 없이 읽고 핵심을 해석하는 눈을 길러줘요.',
+            },
+            {
+              title: 'ADsP (데이터분석 준전문가)',
+              kind: '추천 자격증',
+              reason: '비전공자나 대학교 1학년도 부담 없이 도전할 수 있는 대표적인 데이터 분야 입문 자격증이에요.',
+            },
+            {
+              title: 'SQLD · 컴퓨터활용능력 1급',
+              kind: '추천 자격증',
+              reason: '엑셀과 데이터베이스에서 내가 원하는 정보만 쏙쏙 뽑아 분석하는 실무의 첫걸음이 됩니다.',
+            },
+          ],
+          theme: {
+            pageBg: 'bg-[#ECFDF5]',
+            heroBannerBg: 'bg-gradient-to-br from-[#D3F9E7] via-[#F2FDF8] to-[#CCFBF1]',
+            cardShadow: 'shadow-[0_20px_54px_-18px_rgba(5,150,105,0.18)]',
+            accentText: 'text-emerald-700',
+            headingText: 'text-[#0B3325]',
+            divider: 'divide-emerald-100 border-emerald-100',
+            barFill: 'bg-emerald-600',
+            barTrack: 'bg-emerald-100',
+            barSecondary: 'bg-emerald-300',
+            primaryButton:
+              'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 shadow-[0_10px_24px_-6px_rgba(5,150,105,0.40)] focus-visible:ring-emerald-600',
+            secondaryButton:
+              'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 focus-visible:ring-emerald-600',
+            separatorColor: 'text-emerald-300',
+          },
+        },
+      };
+
+      const ROLE_ORDER = ['planning', 'dev', 'design', 'data'];
+
+      const state = {
+        stage: 'start',
+        currentIndex: 0,
+        answers: [],
+        isTransitioning: false,
+      };
+
+      const appWrapper = document.getElementById('app-wrapper');
+      const mainStage = document.getElementById('main-stage');
+      const brandHomeBtn = document.getElementById('brand-home-btn');
+      const headerResetBtn = document.getElementById('header-reset-btn');
+
+      function calculateQuizResult(selectedRoles) {
+        const counts = { planning: 0, dev: 0, design: 0, data: 0 };
+        const lastIndexSeen = { planning: -1, dev: -1, design: -1, data: -1 };
+
+        selectedRoles.forEach((role, idx) => {
+          counts[role] += 1;
+          lastIndexSeen[role] = idx;
+        });
+
+        const sortedRoles = [...ROLE_ORDER].sort((a, b) => {
+          if (counts[b] !== counts[a]) return counts[b] - counts[a];
+          return lastIndexSeen[b] - lastIndexSeen[a];
+        });
+
+        const total = Math.max(selectedRoles.length, 1);
+        const breakdown = sortedRoles.map((role) => ({
+          role,
+          title: ROLE_PROFILES[role].title,
+          percentage: Math.round((counts[role] / total) * 100),
+        }));
+
+        return { primary: ROLE_PROFILES[sortedRoles[0]], breakdown };
+      }
+
+      function setPageThemeClass(themeClass) {
+        appWrapper.className = `min-h-dvh flex flex-col transition-colors duration-500 ${themeClass || ''}`;
+      }
+
+      function resetToStart() {
+        state.stage = 'start';
+        state.currentIndex = 0;
+        state.answers = [];
+        state.isTransitioning = false;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function startQuiz() {
+        state.stage = 'quiz';
+        state.currentIndex = 0;
+        state.answers = [];
+        state.isTransitioning = false;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function renderStartScreen() {
+        setPageThemeClass('');
+        headerResetBtn.classList.add('hidden');
+
+        mainStage.innerHTML = `
+          <section class="w-full max-w-5xl mx-auto animate-enter">
+            <div class="bg-white rounded-[28px] shadow-[0_18px_50px_-18px_rgba(109,40,217,0.16)] overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch">
+              <div class="lg:col-span-7 p-7 sm:p-10 lg:p-12 flex flex-col justify-between gap-8">
+                <div class="space-y-5">
+                  <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs sm:text-sm font-medium text-violet-700">
+                    <span>대학생 진로 탐색</span>
+                    <span aria-hidden="true" class="text-violet-300">·</span>
+                    <span class="tabular-nums">12개 문항</span>
+                    <span aria-hidden="true" class="text-violet-300">·</span>
+                    <span>약 2분 소요</span>
+                  </div>
+
+                  <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-bold tracking-tight leading-[1.2] text-[#1D1338] text-balance">
+                    나에게 맞는<br />직무유형 테스트
+                  </h1>
+
+                  <p class="text-[15px] sm:text-base leading-relaxed text-[#52476E] max-w-lg">
+                    직무에 대해 잘 몰라도 괜찮아요. 조별과제, 동아리, 아르바이트 등
+                    익숙한 대학생활 12가지 장면에서 나의 선택을 고르면, 어울리는 직무와
+                    1학년부터 준비할 과목·자격증을 바로 알려드릴게요.
+                  </p>
+                </div>
+
+                <div class="space-y-6">
+                  <button
+                    id="start-quiz-btn"
+                    type="button"
+                    class="btn-bouncy w-full sm:w-auto min-h-[54px] px-8 py-3.5 rounded-2xl bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white font-semibold text-base shadow-[0_10px_24px_-6px_rgba(124,58,237,0.48)] inline-flex items-center justify-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 focus-visible:ring-offset-2 whitespace-nowrap shrink-0"
+                  >
+                    <span>시작하기</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                    </svg>
+                  </button>
+
+                  <div class="pt-5 border-t border-violet-100 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-[#6B6088]">
+                    <span class="font-medium text-[#473B66]">탐색 직무</span>
+                    <span aria-hidden="true" class="text-violet-300">/</span>
+                    <span>기획형 PM</span>
+                    <span aria-hidden="true" class="text-violet-300">·</span>
+                    <span>개발형 엔지니어</span>
+                    <span aria-hidden="true" class="text-violet-300">·</span>
+                    <span>디자인형 디자이너</span>
+                    <span aria-hidden="true" class="text-violet-300">·</span>
+                    <span>데이터형 애널리스트</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-5 bg-[#F7F5FF] flex items-center justify-center p-5 sm:p-8 lg:p-6">
+                <div class="w-full max-w-sm lg:max-w-none aspect-[4/3] lg:aspect-auto lg:h-full rounded-2xl overflow-hidden">
+                  ${HERO_SVG}
+                </div>
+              </div>
+            </div>
+          </section>
+        `;
+
+        document.getElementById('start-quiz-btn').addEventListener('click', startQuiz);
+      }
+
+      function renderQuestionScreen() {
+        setPageThemeClass('');
+        headerResetBtn.classList.remove('hidden');
+
+        const question = QUIZ_QUESTIONS[state.currentIndex];
+        const total = QUIZ_QUESTIONS.length;
+        const progressPercent = ((state.currentIndex + 1) / total) * 100;
+        const savedOptionId = state.answers[state.currentIndex]?.optionId;
+
+        mainStage.innerHTML = `
+          <section aria-label="직무유형 질문" class="w-full max-w-3xl mx-auto flex flex-col gap-5 sm:gap-6">
+            <div class="bg-white rounded-3xl px-5 py-4 sm:px-7 sm:py-5 shadow-[0_10px_30px_-14px_rgba(109,40,217,0.14)]">
+              <div class="flex items-center justify-between gap-4 mb-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  ${
+                    state.currentIndex > 0
+                      ? `<button id="prev-question-btn" type="button" class="min-h-[40px] min-w-[40px] -ml-2 px-2.5 rounded-xl text-sm font-medium text-[#5D507C] hover:text-violet-700 hover:bg-violet-50 inline-flex items-center gap-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 whitespace-nowrap shrink-0">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m6-6-6 6 6 6" />
+                          </svg>
+                          <span>이전</span>
+                        </button>`
+                      : `<span class="min-h-[40px] inline-flex items-center text-sm font-medium text-[#6B6088]">진행도</span>`
+                  }
+                </div>
+
+                <div class="font-display text-sm sm:text-base font-semibold text-violet-700 tabular-nums whitespace-nowrap shrink-0">
+                  ${state.currentIndex + 1}/${total}
+                </div>
+              </div>
+
+              <div class="w-full h-2.5 bg-violet-100 rounded-full overflow-hidden" role="progressbar" aria-valuenow="${state.currentIndex + 1}" aria-valuemin="1" aria-valuemax="${total}">
+                <div class="h-full bg-violet-600 rounded-full transition-all duration-300" style="width: ${progressPercent}%"></div>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-4 sm:gap-5 animate-enter">
+              <div class="bg-white rounded-[28px] p-6 sm:p-9 shadow-[0_14px_40px_-16px_rgba(109,40,217,0.16)]">
+                <div class="flex items-center gap-2 text-xs sm:text-sm font-medium text-violet-700 mb-3">
+                  <span class="font-display tabular-nums">Q${String(question.id).padStart(2, '0')}</span>
+                  <span aria-hidden="true" class="text-violet-300">·</span>
+                  <span>${question.situation}</span>
+                </div>
+
+                <h2 class="text-xl sm:text-2xl font-bold leading-[1.45] text-[#1D1338] text-balance">
+                  ${question.question}
+                </h2>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                ${question.options
+                  .map((option) => {
+                    const isHighlighted = savedOptionId === option.id;
+                    return `
+                      <button
+                        type="button"
+                        data-option-id="${option.id}"
+                        data-role="${option.role}"
+                        class="option-card group text-left rounded-[24px] p-5 sm:p-7 min-h-[112px] sm:min-h-[168px] flex flex-col justify-between gap-4 border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 focus-visible:ring-offset-2 ${
+                          isHighlighted
+                            ? 'bg-violet-50 border-violet-600 shadow-[0_14px_30px_-10px_rgba(124,58,237,0.32)]'
+                            : 'bg-white border-transparent hover:border-violet-300 hover:bg-violet-50/40 shadow-[0_10px_28px_-14px_rgba(109,40,217,0.14)]'
+                        }"
+                      >
+                        <div class="flex items-center justify-between w-full">
+                          <span class="option-badge font-display text-sm font-bold w-8 h-8 rounded-xl inline-flex items-center justify-center transition-colors ${
+                            isHighlighted
+                              ? 'bg-violet-600 text-white'
+                              : 'bg-violet-100 text-violet-700 group-hover:bg-violet-200'
+                          }">
+                            ${option.id}
+                          </span>
+
+                          <span class="option-check w-6 h-6 rounded-full flex items-center justify-center transition-opacity ${
+                            isHighlighted ? 'opacity-100 bg-violet-600 text-white' : 'opacity-0'
+                          }" aria-hidden="true">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.75" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7" />
+                            </svg>
+                          </span>
+                        </div>
+
+                        <p class="text-[15px] sm:text-base font-medium leading-[1.6] text-[#2C224A]">
+                          ${option.text}
+                        </p>
+                      </button>
+                    `;
+                  })
+                  .join('')}
+              </div>
+            </div>
+          </section>
+        `;
+
+        const prevBtn = document.getElementById('prev-question-btn');
+        if (prevBtn) {
+          prevBtn.addEventListener('click', () => {
+            if (state.isTransitioning || state.currentIndex === 0) return;
+            state.currentIndex -= 1;
+            render();
+          });
+        }
+
+        const optionButtons = mainStage.querySelectorAll('[data-option-id]');
+        optionButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            if (state.isTransitioning) return;
+            state.isTransitioning = true;
+
+            const optionId = btn.getAttribute('data-option-id');
+            const role = btn.getAttribute('data-role');
+
+            optionButtons.forEach((b) => (b.disabled = true));
+            btn.classList.remove('border-transparent', 'bg-white');
+            btn.classList.add(
+              'bg-violet-50',
+              'border-violet-600',
+              'shadow-[0_14px_30px_-10px_rgba(124,58,237,0.32)]',
+              'animate-bounce-select'
+            );
+
+            const badge = btn.querySelector('.option-badge');
+            const check = btn.querySelector('.option-check');
+            if (badge) {
+              badge.classList.remove('bg-violet-100', 'text-violet-700');
+              badge.classList.add('bg-violet-600', 'text-white');
+            }
+            if (check) {
+              check.classList.remove('opacity-0');
+              check.classList.add('opacity-100', 'bg-violet-600', 'text-white');
+            }
+
+            setTimeout(() => {
+              state.answers[state.currentIndex] = { role, optionId };
+              state.isTransitioning = false;
+              if (state.currentIndex + 1 < QUIZ_QUESTIONS.length) {
+                state.currentIndex += 1;
+              } else {
+                state.stage = 'result';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+              render();
+            }, 360);
+          });
+        });
+      }
+
+      function renderResultScreen() {
+        const result = calculateQuizResult(state.answers.map((a) => a.role));
+        const { primary, breakdown } = result;
+        const { theme } = primary;
+
+        setPageThemeClass(theme.pageBg);
+        headerResetBtn.classList.remove('hidden');
+
+        mainStage.innerHTML = `
+          <section aria-label="직무유형 테스트 결과" class="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start animate-enter">
+            <div class="lg:col-span-7 bg-white rounded-[30px] overflow-hidden ${theme.cardShadow} flex flex-col">
+              <div class="${theme.heroBannerBg} px-6 py-7 sm:px-9 sm:py-9 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div class="space-y-3 flex-1">
+                  <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold ${theme.accentText}">
+                    <span>테스트 결과</span>
+                    <span aria-hidden="true" class="${theme.separatorColor}">·</span>
+                    <span class="font-display">${primary.englishSubtitle}</span>
+                  </div>
+
+                  <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.15] ${theme.headingText} text-balance">
+                    ${primary.title}
+                  </h1>
+
+                  <p class="text-base sm:text-lg font-bold ${theme.accentText} leading-snug">
+                    “${primary.nickname}”
+                  </p>
+                </div>
+
+                <div class="w-36 h-36 sm:w-44 sm:h-44 rounded-3xl overflow-hidden bg-white/90 p-2 shadow-sm shrink-0 self-center sm:self-auto">
+                  ${ROLE_SVGS[primary.role]}
+                </div>
+              </div>
+
+              <div class="p-6 sm:p-9 flex flex-col gap-6">
+                <p class="text-[15px] sm:text-base leading-[1.8] text-[#352C4A]">
+                  ${primary.description}
+                </p>
+
+                <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs sm:text-sm font-medium text-[#5F5380]">
+                  <span class="font-semibold ${theme.headingText}">핵심 강점</span>
+                  <span aria-hidden="true" class="${theme.separatorColor}">/</span>
+                  ${primary.keywords
+                    .map(
+                      (keyword, index) => `
+                        <span class="inline-flex items-center gap-2.5">
+                          <span>${keyword}</span>
+                          ${
+                            index < primary.keywords.length - 1
+                              ? `<span aria-hidden="true" class="${theme.separatorColor}">·</span>`
+                              : ''
+                          }
+                        </span>
+                      `
+                    )
+                    .join('')}
+                </div>
+
+                <div class="pt-5 border-t ${theme.divider} space-y-3.5">
+                  <h2 class="text-sm font-bold ${theme.headingText}">
+                    12개 선택으로 본 나의 일하는 스타일 비율
+                  </h2>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+                    ${breakdown
+                      .map((item) => {
+                        const isTop = item.role === primary.role;
+                        return `
+                          <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs sm:text-sm">
+                              <span class="${isTop ? `font-bold ${theme.accentText}` : 'font-medium text-[#52476E]'}">
+                                ${item.title}
+                              </span>
+                              <span class="font-display tabular-nums ${isTop ? `font-bold ${theme.accentText}` : 'font-medium text-[#6B6088]'}">
+                                ${item.percentage}%
+                              </span>
+                            </div>
+                            <div class="w-full h-2.5 ${theme.barTrack} rounded-full overflow-hidden">
+                              <div class="h-full rounded-full transition-all duration-500 ${isTop ? theme.barFill : theme.barSecondary}" style="width: ${Math.max(item.percentage, 6)}%"></div>
+                            </div>
+                          </div>
+                        `;
+                      })
+                      .join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-5 bg-white rounded-[30px] p-6 sm:p-9 ${theme.cardShadow} flex flex-col gap-6">
+              <div class="space-y-1.5">
+                <p class="text-xs sm:text-sm font-semibold ${theme.accentText}">1학년 로드맵</p>
+                <h2 class="text-xl sm:text-2xl font-bold ${theme.headingText}">추천 자격증 · 과목 3가지</h2>
+              </div>
+
+              <ol class="divide-y ${theme.divider}">
+                ${primary.recommendations
+                  .map(
+                    (rec, index) => `
+                      <li class="py-4 first:pt-1 last:pb-1 space-y-1.5">
+                        <div class="flex items-center gap-2 text-xs font-semibold ${theme.accentText}">
+                          <span class="font-display font-bold tabular-nums">${String(index + 1).padStart(2, '0')}</span>
+                          <span aria-hidden="true" class="${theme.separatorColor}">·</span>
+                          <span>${rec.kind}</span>
+                        </div>
+                        <h3 class="text-base font-bold ${theme.headingText}">${rec.title}</h3>
+                        <p class="text-sm leading-relaxed text-[#52476E]">${rec.reason}</p>
+                      </li>
+                    `
+                  )
+                  .join('')}
+              </ol>
+
+              <div class="pt-2 flex flex-col gap-2.5">
+                <button
+                  id="share-result-btn"
+                  type="button"
+                  class="btn-bouncy w-full min-h-[52px] px-6 py-3.5 rounded-2xl text-white font-semibold text-base inline-flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 whitespace-nowrap shrink-0 ${theme.primaryButton}"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="18" cy="5" r="3" />
+                    <circle cx="6" cy="12" r="3" />
+                    <circle cx="18" cy="19" r="3" />
+                    <path stroke-linecap="round" d="m8.59 13.51 6.83 3.98m-.01-10.98-6.82 3.98" />
+                  </svg>
+                  <span>공유하기</span>
+                </button>
+
+                <button
+                  id="restart-quiz-btn"
+                  type="button"
+                  class="btn-bouncy w-full min-h-[48px] px-5 py-3 rounded-2xl font-semibold text-sm inline-flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 whitespace-nowrap shrink-0 ${theme.secondaryButton}"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5" />
+                  </svg>
+                  <span>다시하기</span>
+                </button>
+              </div>
+            </div>
+          </section>
+        `;
+
+        const shareBtn = document.getElementById('share-result-btn');
+        shareBtn.addEventListener('click', async () => {
+          const recText = primary.recommendations
+            .map((item, idx) => `${idx + 1}. ${item.title} (${item.kind})`)
+            .join('\n');
+
+          const summary = `[나에게 맞는 직무유형 테스트 결과]\n직무유형: ${primary.title}\n별명: "${primary.nickname}"\n\n${primary.description}\n\n[추천 자격증 · 과목 3가지]\n${recText}`;
+
+          let copied = false;
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(summary);
+              copied = true;
+            }
+          } catch {
+            copied = false;
+          }
+
+          if (!copied) {
+            try {
+              const textarea = document.createElement('textarea');
+              textarea.value = summary;
+              textarea.setAttribute('readonly', '');
+              textarea.style.position = 'fixed';
+              textarea.style.opacity = '0';
+              document.body.appendChild(textarea);
+              textarea.select();
+              copied = document.execCommand('copy');
+              document.body.removeChild(textarea);
+            } catch {
+              copied = false;
+            }
+          }
+
+          if (copied) {
+            const originalHtml = shareBtn.innerHTML;
+            shareBtn.innerHTML = `
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7" />
+              </svg>
+              <span>결과가 클립보드에 복사되었어요!</span>
+            `;
+            setTimeout(() => {
+              shareBtn.innerHTML = originalHtml;
+            }, 2600);
+          }
+        });
+
+        document.getElementById('restart-quiz-btn').addEventListener('click', resetToStart);
+      }
+
+      function render() {
+        if (state.stage === 'start') renderStartScreen();
+        else if (state.stage === 'quiz') renderQuestionScreen();
+        else renderResultScreen();
+      }
+
+      brandHomeBtn.addEventListener('click', resetToStart);
+      headerResetBtn.addEventListener('click', resetToStart);
+
+      render();
+    </script>
+  </body>
+</html>
